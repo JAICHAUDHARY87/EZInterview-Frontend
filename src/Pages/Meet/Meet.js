@@ -149,8 +149,8 @@ export default function Meet() {
 
   return (
     <div>
-      <div ref={meetRef} style={{height: '100vh', width: '100%'}}></div>
       <Webcam style={{visibility: 'hidden', position: 'absolute'}} ref={webcamRef} />
+      <div ref={meetRef} style={{height: '100vh', width: '100%'}}></div>
       <div>Status:{modelsLoaded ? "Loaded" : "NOPE"}</div>
       <div>Status1:{isLookingAtCamera ? "Looking" : "NOPE"}</div>
     </div>
