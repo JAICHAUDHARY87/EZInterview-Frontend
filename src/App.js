@@ -6,6 +6,7 @@ import OTP from './Pages/SignUp/OTP';
 import Login from './Pages/SignUp/Login';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from './Components/Navbar/Navbar';
+import Dashboard from './Pages/Dashboard/Dashboard';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
         <Route path="/otp" element={<OTP />} />
         <Route path="/meet" element={<Meet />} />
         <Route path="/login" element={<Login />} />
-        <Route path='/navbar' element={<Navbar />} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </Router>
   );

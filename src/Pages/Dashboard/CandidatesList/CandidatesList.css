@@ -1,0 +1,86 @@
+/* Candidates.css */
+
+/* Container for the entire component */
+.candidates-container {
+    font-family: Arial, sans-serif;
+    padding: 24px 36px;
+    overflow-y: auto;
+    max-height: 100vh;
+    flex-grow: 1;
+    box-sizing: border-box;
+  }
+  
+  /* Header styles */
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* Search bar styles */
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: #e6e7ec;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  /* Tabs styles */
+  .tabs {
+    display: flex;
+    gap: 10px;
+  }
+  
+  button {
+    border: none;
+    background: white;
+    margin-bottom: 16px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .Active{
+    border-bottom: 3px solid #0e1629;
+  }
+  
+  /* Table styles */
+  .candidates-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+  }
+  
+  th, td {
+    padding: 16px 16px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: white;
+    text-align: left;
+  }
+  
+  /* Active status styles */
+  .active-status {
+    color: blue;
+  }
+  
+  /* Pagination styles (customize as needed) */
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  /* Example: Add styles for previous and next buttons */
+  .pagination button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
