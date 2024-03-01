@@ -1,6 +1,42 @@
 /* Candidates.css */
 
 /* Container for the entire component */
+/* CSS for the modal */
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  width: 40%;
+  
+  
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .candidates-container {
     font-family: Arial, sans-serif;
     padding: 24px 36px;
@@ -64,6 +100,11 @@
     background-color: white;
     text-align: left;
   }
+ 
+.create-candidate{
+  background-color: rgb(160, 160, 247);
+  
+}
   
   /* Active status styles */
   .active-status {

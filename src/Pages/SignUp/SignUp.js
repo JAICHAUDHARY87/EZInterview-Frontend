@@ -1,17 +1,18 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./SignUp.css";
-import { useNavigate } from "react-router-dom";
+
 
 export default function SignUp() {
-  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,9 +20,10 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Client-side validation
+    setLoading(true);
+
     const errors = [];
+
     if (formData.username.length < 3) {
       errors.push("Username must be at least 3 characters long");
     }
@@ -34,38 +36,38 @@ export default function SignUp() {
     if (formData.password !== formData.confirmPassword) {
       errors.push("Passwords do not match");
     }
-  
+
     if (errors.length > 0) {
-      alert(errors[0]);
+      setError(errors[0]);
+      setLoading(false);
       return;
     }
-  
+
     try {
-      const response = await fetch("http://localhost:5000/auth/SignUp", {
-        method: "POST",
+      const res = await fetch("http://localhost:8080/api/user/signup", {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.username,
+          username: formData.username,
           email: formData.email,
-          pass: formData.password
+          password: formData.password
         })
       });
-      const data = await response.json();
-      if (response.ok) {
-        setSuccessMessage(data.success);
-        Navigate('/OTP', { state: { Email: formData.email } });
+      const data = await res.json();
+      if (res.ok) {
+        navigate('/OTP', { state: { Email: formData.email } });
       } else {
-        setErrorMessages(Object.values(data));
-        alert("Error: " + data.error);
+        setError(data.error || "An error occurred");
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error:", error);
-      setErrorMessages(["Internal Server Error"]);
+      setError("An unexpected error occurred");
+      setLoading(false);
     }
   };
-  
 
   return (
     <div className="SignUpMain">
@@ -75,6 +77,7 @@ export default function SignUp() {
         </div>
         <form onSubmit={handleSubmit} className="SignUpForm">
           <h1>Sign Up</h1>
+          {error && <p className="error">{error}</p>}
           <div className="SignUpInput">
             <label htmlFor="username">Username</label>
             <input
@@ -116,10 +119,12 @@ export default function SignUp() {
             />
           </div>
           <div className="SignUpInput">
-            <button type="submit">Sign Up</button>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing Up...' : 'Sign Up'}
+            </button>
           </div>
           <div className="SignUpInput" style={{ textAlign: 'center' }}>
-            <p>Already have an account? <a href="/login">Login</a></p>
+            <p>Already have an account? <Link to="/login">Login</Link></p>
           </div>
         </form>
       </div>

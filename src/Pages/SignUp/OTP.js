@@ -1,92 +1,101 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  
+  signInSuccess
+  
+} from '../../redux/user/userSlice';
 
 const OTP = () => {
   const state = useLocation().state;
   const { Email } = state;
-  const authtoken = localStorage.getItem("EI-auth-token");
-  const [otp, setotp] = useState("");
-  const [Loading, setLoading] = useState(false);
-  const baseURL = "http://localhost:5000/";
-  const Navigate = useNavigate();
-  useEffect(() => {
-    if (authtoken) {
-      Navigate("/");
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+ 
+  const navigate = useNavigate();
+
   const otpOnChange = (event) => {
-    setotp(event.target.value);
+    setOtp(event.target.value);
   };
-  const SignUpHandler = async (e) => {
+
+  const signUpHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
     if (!otp) {
-      alert("Please enter all Details");
+      alert("Please enter OTP");
       setLoading(false);
-    } else {
-      const data = {
-        otp: otp,
-        email: Email,
-      };
-      const url = `${baseURL}auth/VerifyOTP`;
+      return;
+    }
 
-      const response = await fetch(url, {
+    const data = {
+      otp: otp,
+      email: Email,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/verify-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      const jsonData = await response.json();
-      console.log(jsonData);
-      setLoading(false);
 
-      if (jsonData.error) {
-        alert(jsonData.error);
-      } else if (jsonData.authtoken) {
-        localStorage.setItem("EI-auth-token", jsonData.authtoken);
-        Navigate("/meet");
+      if (response.ok) {
+        const res = await response.json();
+        dispatch(signInSuccess(res));
+        setLoading(false);
+        navigate("/meet");
       } else {
-        alert("An issue occured, Pls report");
+        
+        
+        alert("An error occurred while verifying OTP. Please try again.");
         setLoading(false);
       }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An unexpected error occurred. Please try again later.");
+      setLoading(false);
     }
   };
+  
   return (
-    <>
+    <div className="SignUpMain">
       <div
-        className={`SignUPMain container-fluid d-flex align-items-center justify-content-center ${
-          Loading ? "" : "Collapsed"
+        className={`container-fluid d-flex align-items-center justify-content-center ${
+          loading ? "" : "Collapsed"
         }`}
       >
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-      <div className="SignUpMain" onSubmit={SignUpHandler}>
-        <div className="SignUpContainer">
-          <div className="SignUpImage">
-            <img src="./Images/SignUpImage.png" alt="Sign Up" />
+        {loading && (
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
-          <form className="SignUpForm">
-            <h1>OTP Verification</h1>
-            <div className="SignUpInput">
-              <label htmlFor="OTP">Password</label>
-              <input
-                type="OTP"
-                name="OTP"
-                id="OTP"
-                value={otp}
-                onChange={otpOnChange}
-              />
-            </div>
-            <div className="SignUpInput">
-              <button type="submit" >Verify OTP</button>
-            </div>
-          </form>
-        </div>
+        )}
       </div>
-    </>
+      <div className="SignUpContainer">
+        <div className="SignUpImage">
+          <img src="./Images/SignUpImage.png" alt="Sign Up" />
+        </div>
+        <form className="SignUpForm" onSubmit={signUpHandler}>
+          <h1>OTP Verification</h1>
+          <div className="SignUpInput">
+            <label htmlFor="OTP">OTP</label>
+            <input
+              type="text"
+              name="OTP"
+              id="OTP"
+              value={otp}
+              onChange={otpOnChange}
+            />
+          </div>
+          <div className="SignUpInput">
+            <button type="submit">Verify OTP</button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

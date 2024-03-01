@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import "./SignUp.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../../redux/user/userSlice';
 
 export default function Login() {
   const Navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [successMessage, setSuccessMessage] = useState("");
+ 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,7 +23,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Client-side validation
     const errors = [];
     if (!formData.email.includes("@")) {
@@ -26,37 +32,38 @@ export default function Login() {
     if (formData.password.length < 8) {
       errors.push("Password must be at least 8 characters long");
     }
-  
+
     if (errors.length > 0) {
       alert(errors[0]);
       return;
     }
-  
+
     try {
-      const response = await fetch("http://localhost:5000/auth/login", {
+      dispatch(signInStart());
+      const response = await fetch("http://localhost:8080/api/user/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
           email: formData.email,
-          pass: formData.password
+          password: formData.password
         })
       });
       const data = await response.json();
-      if (response.ok) {
-        setSuccessMessage(data.success);
-        Navigate('/meet', { state: { Email: formData.email } });
-      } else {
-        setErrorMessages(Object.values(data));
-        alert("Error: " + data.error);
+      if (data.success === false) {
+        dispatch(signInFailure(data.message));
+        return;
       }
+
+      dispatch(signInFailure(data.message));
+      Navigate('/meet');
+
     } catch (error) {
-      console.error("Error:", error);
-      setErrorMessages(["Internal Server Error"]);
+      dispatch(signInFailure(error.message));
     }
   };
-  
+
 
   return (
     <div className="SignUpMain">
