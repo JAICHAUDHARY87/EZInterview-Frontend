@@ -7,6 +7,7 @@ import Login from './Pages/SignUp/Login';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from './Components/Navbar/Navbar';
 import Dashboard from './Pages/Dashboard/Dashboard';
+import InterviewerProfile from './Pages/profile/InterviewerProfile';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/meet" element={<Meet />} />
         <Route path="/login" element={<Login />} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/profile' element={<InterviewerProfile />} />
       </Routes>
     </Router>
   );

@@ -14,7 +14,7 @@ export default function Navbar() {
         <div className="SideNavbarMenu">
           <ul>
             <li className="NavItemSelected">
-              <a href="/" title="Manage Interviews">
+              <a href="/profile" title="Manage Interviews">
                 <span class="material-symbols-outlined">account_circle</span>
               </a>
             </li>
