@@ -10,7 +10,7 @@ const Candidates = () => {
 
   useEffect(() => {
       fetchData();
-  }, []);
+  }, [candidateData]);
 
   const fetchData = async () => {
       try {
@@ -40,7 +40,7 @@ const Candidates = () => {
         <div className="modal">
           <div className="modal-content">
             <span className="close" onClick={() => setOpen(false)}>&times;</span>
-            <CreateCandidate />
+            <CreateCandidate open = {setOpen}/>
           </div>
         </div>
       )}

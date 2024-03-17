@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './CreateCandidate.css'; 
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
-const CreateCandidate = () => {
+const CreateCandidate = ({open}) => {
     const { currentUser } = useSelector((state) => state.user);
     const [formData, setFormData] = useState({
         name: '',
@@ -11,8 +12,9 @@ const CreateCandidate = () => {
         skills: [],
         role: '',
         current_status: '',
-        company_id: currentUser._id, // Assigning the current user's company ID
+        company_id: currentUser?._id, // Assigning the current user's company ID
     });
+    const navigate  = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -60,8 +62,11 @@ const CreateCandidate = () => {
 
             // Optionally, you can display a success message or perform other actions here
             console.log('Candidate created successfully');
+            open(false);
+
         } catch (error) {
             console.error('Error creating candidate:', error.message);
+
             // Optionally, you can display an error message to the user here
         }
     };
@@ -105,7 +110,7 @@ const CreateCandidate = () => {
                 {/* Assuming company_id will be filled dynamically */}
                 <div className="form-group">
                     <label>Company ID:</label>
-                    <input type="text" name="company_id" value={currentUser._id} onChange={handleChange} required />
+                    <input type="text" name="company_id" value={currentUser?._id} onChange={handleChange} required />
                 </div>
                 <button type="submit">Submit</button>
             </form>

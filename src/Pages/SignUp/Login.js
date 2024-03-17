@@ -15,7 +15,7 @@ export default function Login() {
     email: "",
     password: "",
   });
- 
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,16 +48,16 @@ export default function Login() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
-        })
+        }),
+        credentials: "include" 
       });
       const data = await response.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
-        return;
-      }
+      console.log(data);
+      console.log(data.success)
 
-      dispatch(signInFailure(data.message));
-      Navigate('/meet');
+
+      dispatch(signInSuccess(data));
+      Navigate('/dashboard');
 
     } catch (error) {
       dispatch(signInFailure(error.message));
