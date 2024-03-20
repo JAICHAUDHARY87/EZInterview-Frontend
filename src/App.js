@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from './Components/Navbar/Navbar';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import InterviewerProfile from './Pages/profile/InterviewerProfile';
+import InterviewerMeet from './Pages/Meet/InterviewerMeet';
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
       <Routes>
         <Route path="/" element={<SignUp />} />
         <Route path="/otp" element={<OTP />} />
-        <Route path="/meet" element={<Meet />} />
+        <Route path="/meet/:id" element={<Meet />} />
+        <Route path="/interview/:id" element={<InterviewerMeet />} />
         <Route path="/login" element={<Login />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<InterviewerProfile />} />

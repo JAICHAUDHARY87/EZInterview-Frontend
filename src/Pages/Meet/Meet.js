@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
+import { useParams } from "react-router-dom";
+import io from "socket.io-client";
 
 export default function Meet() {
   const meetRef = useRef(null);
@@ -11,15 +13,40 @@ export default function Meet() {
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [notification, setNotification] = useState({ message: "", type: "" });
   const [lookDuration, setLookDuration] = useState(0);
+  const {id} = useParams();
+  const [socket, setSocket] = useState(null);
+  const [isTabActive, setIsTabActive] = useState(true);
 
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      if (socket) {
+        socket.emit("back-in-tab");
+      }
+    };
+  
+    const handleWindowBlur = () => {
+      if (socket) {
+        socket.emit("out-of-tab");
+      }
+    };
+  
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("blur", handleWindowBlur);
+  
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [socket]);
+  
 
   useEffect(() => {
     const loadModels = async () => {
       try {
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri("models"),
-          faceapi.nets.faceLandmark68Net.loadFromUri("models"),
-          faceapi.nets.faceRecognitionNet.loadFromUri("models"),
+          faceapi.nets.tinyFaceDetector.loadFromUri("../models"),
+          faceapi.nets.faceLandmark68Net.loadFromUri("../models"),
+          faceapi.nets.faceRecognitionNet.loadFromUri("../models"),
         ]);
         setModelsLoaded(true);
       } catch (error) {
@@ -43,8 +70,6 @@ export default function Meet() {
         .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks();
 
-        console.log("HELLO");
-        console.log(result);
         if (result) {
         const landmarks = result.landmarks;
         const leftEye = landmarks.getLeftEye();
@@ -62,7 +87,6 @@ export default function Meet() {
             rightEye.map((pt) => pt._y).reduce((a, b) => a + b, 0) /
               rightEye.length) /
           2;
-        console.log(avgEyeX, avgEyeY);
 
         const canvasCenterX = video.videoWidth / 2;
         const canvasCenterY = video.videoHeight / 2;
@@ -76,14 +100,17 @@ export default function Meet() {
         const isLooking =
           Math.abs(avgEyeX - canvasCenterX) < 50 &&
           Math.abs(avgEyeY - canvasCenterY) < 100;
-        setIsLookingAtCamera(isLooking);
-
-        if (isLooking) {
-          setLookDuration((prevDuration) => prevDuration + 1);
-        } else {
-          setLookDuration(0);
+        setIsLookingAtCamera(isLooking)
+        console.log(socket);
+        if (socket) {
+          if (isLooking) {
+            socket.emit("look-back");
+          } else {
+            socket.emit("look-away");
+          }
         }
       } else {
+        socket.emit("look-away");
         setIsLookingAtCamera(false);
         setLookDuration(0);
       }
@@ -96,7 +123,7 @@ export default function Meet() {
         clearInterval(intervalId);
       };
     });
-  }, [modelsLoaded]);
+  }, [modelsLoaded,socket]);
 
   function randomID(len) {
     let result = "";
@@ -112,10 +139,10 @@ export default function Meet() {
     return result;
   }
   useEffect(() => {
-    const roomID = "123456";
+    const roomID = id;
     const appID = 1842355862;
     const serverSecret = "f7994352e134f4ae2e8f4c3589316b37";
-    const userID = "Garv Goel"; // Replace with a unique user ID
+    const userID = "Garv Goel"; 
 
     const generateKitToken = async () => {
       const timestamp = Date.now();
@@ -143,16 +170,28 @@ export default function Meet() {
     };
 
     initializeZegoSDK();
+  }, []);
+  
+  useEffect(() => {
+    const socket = io("http://localhost:8080");
+    setSocket(socket);
+    socket.on("connect", () => {
+      console.log("Connected to Socket.io server");
+      socket.emit("connect-room", { roomID: id });
+    });
 
-    
+    socket.on("disconnect", () => {
+      console.log("Disconnected from Socket.io server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   return (
     <div>
       <Webcam style={{visibility: 'hidden', position: 'absolute'}} ref={webcamRef} />
-      <div ref={meetRef} style={{height: '100vh', width: '100%'}}></div>
-      <div>Status:{modelsLoaded ? "Loaded" : "NOPE"}</div>
-      <div>Status1:{isLookingAtCamera ? "Looking" : "NOPE"}</div>
     </div>
   );
 }

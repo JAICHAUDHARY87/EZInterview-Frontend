@@ -10,7 +10,7 @@ const Candidates = () => {
 
   useEffect(() => {
       fetchData();
-  }, [candidateData]);
+  }, [setCandidateData]);
 
   const fetchData = async () => {
       try {
