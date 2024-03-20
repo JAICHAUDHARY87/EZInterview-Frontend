@@ -1,0 +1,31 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .profile-card {
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .upload-resume-btn {
+    background-color: #007bff; /* Blue button background */
+    color: #fff; /* White text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .upload-resume-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  

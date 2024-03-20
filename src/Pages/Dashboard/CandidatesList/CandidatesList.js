@@ -1,6 +1,7 @@
 import React, { useState ,useEffect} from 'react';
 import './CandidatesList.css'; // Import your CSS file (if any)
 import CreateCandidate from '../CreateCandidate';
+import { Link } from 'react-router-dom';
 
 const Candidates = () => {
     const [Tab, setTab] = useState('all');
@@ -58,7 +59,9 @@ const Candidates = () => {
         <tbody>
           {candidateData.map((candidate, index) => (
             <tr key={index}>
-              <td>{candidate.name}</td>
+               <td>
+                <Link to={`/candidates/${candidate._id}`}>{candidate.name}</Link>
+              </td>
               <td>{candidate.email}</td>
               <td>{candidate.role}</td>
               <td className="active-status">{candidate.current_status}</td>
