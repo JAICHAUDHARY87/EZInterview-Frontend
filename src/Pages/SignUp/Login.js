@@ -57,7 +57,7 @@ export default function Login() {
 
 
       dispatch(signInSuccess(data));
-      Navigate('/dashboard');
+      Navigate('/candidate');
 
     } catch (error) {
       dispatch(signInFailure(error.message));

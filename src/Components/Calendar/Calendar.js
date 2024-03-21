@@ -4,7 +4,7 @@ import InterviewResults from "../InterviewResults/InterviewResults";
 import InterviewCard from "../InterviewCard/InterviewCard";
 import InterviewScheduler from "../InterviewScheduler/InterviewScheduler";
 
-const CalendarComponent = () => {
+const CalendarComponent = ({setProgress}) => {
   const [Open, setOpen] = useState(false);
   const [interviews, setInterviews] = useState([]);
   const [filteredInterviews, setFilteredInterviews] = useState([]);
@@ -26,10 +26,12 @@ const CalendarComponent = () => {
   }, [interviews]);
 
   const fetchInterviews = () => {
+    setProgress(25);
     fetch("http://localhost:8080/api/interview/get")
       .then((res) => res.json())
       .then((data) => {
         setInterviews(data);
+        setProgress(100);
       });
   };
 

@@ -3,7 +3,7 @@ import './CandidatesList.css'; // Import your CSS file (if any)
 import CreateCandidate from '../CreateCandidate';
 import { Link } from 'react-router-dom';
 
-const Candidates = () => {
+const Candidates = ({ setProgress }) => {
     const [Tab, setTab] = useState('all');
   // Sample data for candidates (you can replace this with actual data)
   const [candidateData, setCandidateData] = useState([]);
@@ -15,12 +15,15 @@ const Candidates = () => {
 
   const fetchData = async () => {
       try {
+        setProgress(25);
           const response = await fetch('http://localhost:8080/api/candidate/get-all');
+          setProgress(75);
           if (!response.ok) {
               throw new Error('Failed to fetch data');
           }
           const data = await response.json();
           setCandidateData(data);
+          setProgress(100);
       } catch (error) {
           console.error('Error fetching data:', error.message);
       }

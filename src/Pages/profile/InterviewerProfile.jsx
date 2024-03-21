@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUserFailure, updateUserSuccess, updateUserStart } from '../../redux/user/userSlice'; 
 import "./InterviewerProfile.css";
 
-const InterviewerProfile = () => {
+const InterviewerProfile = ({setProgress}) => {
   const dispatch = useDispatch();
+  setProgress(0);
   const { currentUser } = useSelector((state) => state.user);
   console.log(currentUser._id);
   const [formData, setFormData] = useState({
@@ -45,6 +46,7 @@ const InterviewerProfile = () => {
     }
   };
 
+  setProgress(100);
   return (
     <div className="interviewer-profile-container">
       <div className="profile-details">

@@ -47,7 +47,7 @@ const OTP = () => {
         const res = await response.json();
         dispatch(signInSuccess(res));
         setLoading(false);
-        navigate("/meet");
+        navigate("/candidate");
       } else {
         
         

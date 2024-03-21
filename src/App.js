@@ -23,9 +23,9 @@ function App() {
         <Route path="/meet/:id" element={<Meet />} />
         <Route path="/interview/:id" element={<InterviewerMeet />} />
         <Route path="/login" element={<Login />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/candidate-list' element={<Candidates/>} />
-        <Route path='/profile' element={<InterviewerProfile />} />
+        <Route path='/candidate' element={<Dashboard />} />
+        <Route path='/interviews' element={<Dashboard />} />
+        <Route path='/profile' element={<Dashboard />} />
         <Route path="/candidates/:id" element={<CandidateProfile />} />
         <Route path="/candidates/:id/auto-generate" element={<ChatGptQuestion />} />
         <Route path="/candidates/:id/manually-generate" element={<ManuallyQuestion />} />

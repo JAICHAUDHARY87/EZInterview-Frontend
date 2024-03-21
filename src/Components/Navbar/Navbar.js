@@ -1,7 +1,9 @@
 import React from "react";
 import "./Navbar.css";
+import { useLocation } from "react-router-dom";
 
 export default function Navbar() {
+  const location = useLocation();
   return (
     <div className="SideNavbarMain">
       <div className="SideNavbar">
@@ -13,18 +15,18 @@ export default function Navbar() {
         </div>
         <div className="SideNavbarMenu">
           <ul>
-            <li className="NavItemSelected">
+            <li className={location.pathname === "/profile"?"NavItemSelected":""}>
               <a href="/profile" title="Manage Interviews">
                 <span class="material-symbols-outlined">account_circle</span>
               </a>
             </li>
-            <li>
-              <a href="/" title="Manage Candidates">
+            <li className={location.pathname === "/candidate"?"NavItemSelected":""}>
+              <a href="/candidate" title="Manage Candidates">
                 <span class="material-symbols-outlined">groups</span>
               </a>
             </li>
-            <li>
-              <a href="/" title="Manage Interviews">
+            <li className={location.pathname === "/interviews"?"NavItemSelected":""}>
+              <a href="/interviews" title="Manage Interviews">
                 <span class="material-symbols-outlined">devices</span>
               </a>
             </li>
