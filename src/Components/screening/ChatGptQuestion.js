@@ -8,7 +8,7 @@ const ChatGptQuestion = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(null);
   const [quizStarted, setQuizStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); 
   const [loading, setLoading] = useState(false); 
@@ -31,7 +31,8 @@ const ChatGptQuestion = () => {
       const response = await axios.get(`http://localhost:8080/api/test/get-question/${testId}`, {
         
       });
-      setQuestions(response.data.questions);
+      setQuestions(response.data[0].questions);
+      console.log(response);
       setQuizStarted(true);
       setLoading(false); 
     } catch (error) {
@@ -58,7 +59,8 @@ const ChatGptQuestion = () => {
   const handleSubmitQuiz = () => {
     let totalScore = 0;
     questions.forEach((question, index) => {
-      if (answers[index] === question.correct_option) {
+      if (answers[index].startsWith(question.correct_option)) {
+        console.log('correct');
         totalScore++;
       }
     });
@@ -85,7 +87,7 @@ const ChatGptQuestion = () => {
         {quizStarted && !loading && (
           <div>
             <div className="timer">Time Left: {formatTime(timeLeft)}</div>
-            {questions.length > 0 && (
+            {questions && questions.length > 0 && (
               <div>
                 <h3>Question {currentQuestionIndex + 1}</h3>
                 <p>{questions[currentQuestionIndex].question}</p>
@@ -117,7 +119,7 @@ const ChatGptQuestion = () => {
                 </div>
               </div>
             )}
-            {score > 0 && (
+            {score != null && (
               <p>Your score: {score} / {questions.length}</p>
             )}
           </div>
