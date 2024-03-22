@@ -19,10 +19,7 @@ const Candidates = ({ setProgress }) => {
         setProgress(25);
           const response = await axios.get(`http://localhost:8080/api/candidate/get-all`,  { withCredentials: true });
           setProgress(75);
-          if (!response.ok) {
-              throw new Error('Failed to fetch data');
-          }
-          const data = await response.json();
+          const data = await response.data;
           setCandidateData(data);
           setProgress(100);
       } catch (error) {
