@@ -2,7 +2,7 @@ import React from 'react'
 
 const ManuallyQuestion = () => {
   return (
-    <div>ManuallyQuestion</div>
+    <div>ManuallyQuestion12</div>
   )
 }
 
