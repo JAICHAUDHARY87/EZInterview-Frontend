@@ -11,8 +11,7 @@ const ChatGptQuestion = () => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); 
   const [loading, setLoading] = useState(false); 
-  const state = useLocation().state;
-  const { skills } = state;
+  
 
   useEffect(() => {
     let timer;
@@ -28,7 +27,7 @@ const ChatGptQuestion = () => {
     try {
       setLoading(true);
       const response = await axios.post('http://localhost:8080/api/candidate/auto-generate', {
-        question: `Ask 10 questions related to ${skills.join(', ')}`,
+        
       });
       setQuestions(response.data.questions);
       setQuizStarted(true);
@@ -73,8 +72,8 @@ const ChatGptQuestion = () => {
   return (
     <div className="container">
       <div className="content">
-        <h2>Prompt to Generate Questions</h2>
-        <p>Ask 10 questions related to the skills: {skills?.join(', ')}</p>
+        <h2>This is just small test for checking your mentioned skills : </h2>
+        
         {!quizStarted && !loading && ( 
           <button className="blue-button" onClick={handleGenerateQuestions}>Start Test</button>
         )}

@@ -13,6 +13,7 @@ import CandidateProfile from './Pages/profile/CandidateProfile';
 import ChatGptQuestion from './Components/screening/ChatGptQuestion';
 import ManuallyQuestion from './Components/screening/ManuallyQuestion';
 import Candidates from './Pages/Dashboard/CandidatesList/CandidatesList';
+import ChatGptInterviwerSide from './Components/screening/ChatGptInterviwerSide';
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
         <Route path='/interviews' element={<Dashboard />} />
         <Route path='/profile' element={<Dashboard />} />
         <Route path="/candidates/:id" element={<CandidateProfile />} />
-        <Route path="/candidates/:id/auto-generate" element={<ChatGptQuestion />} />
+        <Route path="/candidates/:id/auto-generate" element={<ChatGptInterviwerSide />} />
+        <Route path="/candidates/:id/test" element={<ChatGptQuestion />} />
         <Route path="/candidates/:id/manually-generate" element={<ManuallyQuestion />} />
       </Routes>
     </Router>

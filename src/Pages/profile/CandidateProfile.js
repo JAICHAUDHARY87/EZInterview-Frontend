@@ -128,6 +128,7 @@ const CandidateProfile = () => {
   navigate(`/candidates/${id}/auto-generate`, { state: { skills: candidate?.skills } });
   
   
+  
  
 };
 
