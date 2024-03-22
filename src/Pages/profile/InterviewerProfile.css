@@ -21,14 +21,22 @@
   }
   
   .profile-info input {
-    margin-bottom: 30px; 
-    padding: 20px 60px; 
+    padding: 20px 30px; 
     border: 1px solid #ccc;
     font-size: 18px;
     width: fit-content;
     border-radius: 8px;
   }
-  
+  .input-with-icon{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 22px; 
+    
+  }
+  .InputIcons{
+    margin-right: 4px;
+  }
   .profile-info button {
     padding: 12px 24px;
     background-color: #007bff;
