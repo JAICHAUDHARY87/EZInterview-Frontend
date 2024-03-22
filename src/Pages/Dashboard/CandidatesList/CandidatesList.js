@@ -2,6 +2,7 @@ import React, { useState ,useEffect} from 'react';
 import './CandidatesList.css'; // Import your CSS file (if any)
 import CreateCandidate from '../CreateCandidate';
 import { Link } from 'react-router-dom';
+import axios from 'axios'; 
 
 const Candidates = ({ setProgress }) => {
     const [Tab, setTab] = useState('all');
@@ -16,7 +17,7 @@ const Candidates = ({ setProgress }) => {
   const fetchData = async () => {
       try {
         setProgress(25);
-          const response = await fetch('http://localhost:8080/api/candidate/get-all');
+          const response = await axios.get(`http://localhost:8080/api/candidate/get-all`,  { withCredentials: true });
           setProgress(75);
           if (!response.ok) {
               throw new Error('Failed to fetch data');
