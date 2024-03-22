@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from "react-router";
+import { useSelector } from 'react-redux';
 
 const ChatGptInterviwerSide = () => {
   const [questions, setQuestions] = useState([]);
@@ -10,37 +11,54 @@ const ChatGptInterviwerSide = () => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [showCandidates, setShowCandidates] = useState(false); // State to control candidate list visibility
   const state = useLocation().state;
-  const { skills } = state;
+  const { skills ,role } = state;
+  
+  
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     fetchData();
   }, []);
-
+  function randomID(len) {
+    let result = "";
+    if (result) return result;
+    var chars =
+        "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
+      maxPos = chars.length,
+      i;
+    len = len || 5;
+    for (i = 0; i < len; i++) {
+      result += chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    return result;
+  }
+  const testId = randomID(10);
   const fetchData = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/candidate/get-all');
-      setCandidates(response.data);
-      setLoading(false); 
+      const response = await axios.get('http://localhost:8080/api/candidate/get-all', { withCredentials: true });
+      const data = await response.data;
+      setCandidates(data);
     } catch (error) {
-      setLoading(false); 
       console.error('Error fetching candidates:', error.message);
     }
   };
-
+   
   const handleGenerateQuestions = async () => {
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/candidate/auto-generate', {
-        question: `Ask 10 questions related to ${skills.join(', ')}`,
+      const response = await axios.post('http://localhost:8080/api/test/auto-generate', {
+        question: `Ask 10 questions related to ${skills.join(', ')} and ${role}`,
+        user : currentUser._id,
+        testId : testId
       });
       setQuestions(response.data.questions);
-      setLoading(false); 
     } catch (error) {
-      setLoading(false); 
       console.error('Error generating questions:', error.message);
+    } finally {
+      setLoading(false);
     }
   };
+ 
 
   const handleSendEmail = () => {
     // Send email logic here
@@ -51,6 +69,7 @@ const ChatGptInterviwerSide = () => {
     });
 
     // Send email to selectedEmails
+    // send this link 
     console.log('Sending emails to:', selectedEmails);
   };
 
@@ -67,9 +86,9 @@ const ChatGptInterviwerSide = () => {
 
   return (
     <div>
-      <h1>Generated Questions</h1>
+      <h1>We generate questions based on the candidate's specified skills and role.</h1>
       {loading ? (
-        <p>Loading...</p>
+        <p>we are building your test question...</p>
       ) : (
         <div>
           {questions.map((questionData, index) => (
@@ -84,9 +103,8 @@ const ChatGptInterviwerSide = () => {
               <p>Correct Option: {questionData.correct_option}</p>
             </div>
           ))}
-          <div>
-            
-            <button disabled={!questions.length} onClick={handleSendEmail}>Send Test Link via Email</button>
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <button disabled={!questions.length} onClick={handleSendEmail} style={generateButtonStyle}>Send Test Link via Email</button>
           </div>
         </div>
       )}
@@ -111,8 +129,9 @@ const ChatGptInterviwerSide = () => {
           ))}
         </div>
       )}
+      
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button onClick={handleGenerateQuestions} style={generateButtonStyle}>Generate Questions</button>
+        <button onClick={handleGenerateQuestions} style={generateButtonStyle}>Generate New Questions</button>
       </div>
     </div>
   );

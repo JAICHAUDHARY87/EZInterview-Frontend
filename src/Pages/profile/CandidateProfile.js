@@ -24,9 +24,8 @@ const CandidateProfile = () => {
   const [formData, setFormData] = useState({
     imageUrls: [],
   });
-  const [downloadURL, setDownloadURL] = useState(null); // State to store the download URL
-  const [showDropdown, setShowDropdown] = useState(false); // State to control dropdown visibility
-
+  const [downloadURL, setDownloadURL] = useState(null); 
+  const [showDropdown, setShowDropdown] = useState(false); 
   useEffect(() => {
     fetchData();
   }, [id,candidate?.pdf_url]);
@@ -39,7 +38,7 @@ const CandidateProfile = () => {
       }
       const data = await response.json();
       setCandidate(data);
-      console.log(data);
+      
     } catch (error) {
       console.error('Error fetching candidate data:', error.message);
     }
@@ -120,12 +119,16 @@ const CandidateProfile = () => {
     setShowDropdown(!showDropdown);
   };
 
-  // Function to handle creating a question from ChatGPT
+  
   const createQuestionFromChatGPT = () => {
-  // Implement your logic for creating a question from ChatGPT here
-  console.log('Creating question from ChatGPT');
-  console.log(candidate.skills);
-  navigate(`/candidates/${id}/auto-generate`, { state: { skills: candidate?.skills } });
+  
+  navigate(`/candidates/${id}/auto-generate`, { 
+    state: { 
+      skills: candidate?.skills,
+      role: candidate?.role
+    }
+  });
+  
   
   
   

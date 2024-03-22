@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useLocation } from "react-router";
 import './ChatGptQuestion.css';
@@ -11,6 +12,7 @@ const ChatGptQuestion = () => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); 
   const [loading, setLoading] = useState(false); 
+  const { testId } = useParams();
   
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const ChatGptQuestion = () => {
   const handleGenerateQuestions = async () => {
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/candidate/auto-generate', {
+      const response = await axios.get(`http://localhost:8080/api/test/get-question/${testId}`, {
         
       });
       setQuestions(response.data.questions);
