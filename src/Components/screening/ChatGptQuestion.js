@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useLocation } from "react-router";
 import './ChatGptQuestion.css';
@@ -8,11 +7,10 @@ const ChatGptQuestion = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [score, setScore] = useState(null);
+  const [score, setScore] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); 
   const [loading, setLoading] = useState(false); 
-  const { testId } = useParams();
   
 
   useEffect(() => {
@@ -28,11 +26,10 @@ const ChatGptQuestion = () => {
   const handleGenerateQuestions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/test/get-question/${testId}`, {
+      const response = await axios.post('http://localhost:8080/api/candidate/auto-generate', {
         
       });
-      setQuestions(response.data[0].questions);
-      console.log(response);
+      setQuestions(response.data.questions);
       setQuizStarted(true);
       setLoading(false); 
     } catch (error) {
@@ -59,8 +56,7 @@ const ChatGptQuestion = () => {
   const handleSubmitQuiz = () => {
     let totalScore = 0;
     questions.forEach((question, index) => {
-      if (answers[index].startsWith(question.correct_option)) {
-        console.log('correct');
+      if (answers[index] === question.correct_option) {
         totalScore++;
       }
     });
@@ -87,7 +83,7 @@ const ChatGptQuestion = () => {
         {quizStarted && !loading && (
           <div>
             <div className="timer">Time Left: {formatTime(timeLeft)}</div>
-            {questions && questions.length > 0 && (
+            {questions.length > 0 && (
               <div>
                 <h3>Question {currentQuestionIndex + 1}</h3>
                 <p>{questions[currentQuestionIndex].question}</p>
@@ -119,7 +115,7 @@ const ChatGptQuestion = () => {
                 </div>
               </div>
             )}
-            {score != null && (
+            {score > 0 && (
               <p>Your score: {score} / {questions.length}</p>
             )}
           </div>

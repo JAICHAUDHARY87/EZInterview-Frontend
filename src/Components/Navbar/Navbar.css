@@ -78,3 +78,6 @@ a[title]:hover:after {
   color: #a35d5d !important;
   transition: all 0.4s ease-in-out;
 }
+.SideNavbarMenu:hover {
+  display: none;
+}

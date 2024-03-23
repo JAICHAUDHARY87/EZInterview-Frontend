@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUserFailure,
@@ -11,15 +11,43 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import axios from 'axios'; 
+import axios from 'axios';
 import { app } from "../../firebase";
 import "./InterviewerProfile.css";
 
 const InterviewerProfile = ({ setProgress }) => {
+  const [hovered, setHovered] = useState(false);
+  const fileInputRef = useRef(null); // Reference to the file input element
+
+  const handleHover = () => {
+    setHovered(!hovered);
+    console.log("hello")
+  };
+  
+  useEffect(() => {
+    const button = document.querySelector(".button");
+    if (button) {
+      button.addEventListener("click", () => {
+        button.classList.add("active");
+        setTimeout(() => {
+          button.classList.remove("active");
+          const icon = button.querySelector("i");
+          if (icon) {
+            icon.classList.replace("bx-cloud-download", "bx-check-circle");
+          }
+          const span = button.querySelector("span");
+          if (span) {
+            span.innerText = "Changes Saved";
+          }
+        }, 6000);
+      });
+    }
+  }, []);
+
   const dispatch = useDispatch();
   setProgress(0);
   const { currentUser } = useSelector((state) => state.user);
-  console.log(currentUser._id);
+  
   const [formData, setFormData] = useState({
     username: currentUser?.username || "",
     email: currentUser?.email || "",
@@ -27,17 +55,18 @@ const InterviewerProfile = ({ setProgress }) => {
   const [file, setFile] = useState(null);
 
   const handleImageChange = (e) => {
-    setFile(e.target.files[0]);
-    console.log(file);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    handleImageSubmit(selectedFile); // Automatically trigger upload when file is selected
   };
 
-  const handleImageSubmit = async () => {
+  const handleImageSubmit = async (selectedFile) => {
     try {
       setProgress(0);
       const storage = getStorage(app);
-      const fileName = new Date().getTime() + file.name;
+      const fileName = new Date().getTime() + selectedFile.name;
       const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -57,7 +86,6 @@ const InterviewerProfile = ({ setProgress }) => {
             const response = await axios.post(`http://localhost:8080/api/user/update/${currentUser._id}`, { avatar: downloadURL }, { withCredentials: true });
             console.log('Image link uploaded successfully:', response.data);
             dispatch(updateUserSuccess(response.data));
-
           } catch (error) {
             console.error(error);
           }
@@ -67,7 +95,6 @@ const InterviewerProfile = ({ setProgress }) => {
       console.error(error);
     }
   };
-  
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -77,12 +104,16 @@ const InterviewerProfile = ({ setProgress }) => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const response = await axios.post(`http://localhost:8080/api/user/update/${currentUser._id}`, formData);
+      const response = await axios.post(`http://localhost:8080/api/user/update/${currentUser._id}`, formData,{ withCredentials: true });
       dispatch(updateUserSuccess(response.data));
     } catch (error) {
       console.error('Error updating user:', error);
       dispatch(updateUserFailure(error.message));
     }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
   };
 
   return (
@@ -92,27 +123,32 @@ const InterviewerProfile = ({ setProgress }) => {
         <form onSubmit={handleSubmit}>
           <div className="profile-info">
             <div className="flex" style={{ justifyContent: "center" }}>
-              <img
-                src={file ? URL.createObjectURL(file):currentUser?.avatar}
-                style={{
-                  height: "100px",
-                  width: "auto",
-                  objectFit: "contain",
-                  marginBottom: "18px",
-                  borderRadius: "140px",
-                }}
-                alt="Avatar"
-              />
-            </div>
-            <div className="input-with-icon">
+              <div
+                className={`flex_image ${hovered ? 'hovered' : ''}`}
+                onMouseEnter={handleHover}
+                onMouseLeave={handleHover}
+                onClick={handleImageClick} // Open file explorer when clicked
+              >
+                <img
+                  src={file ? URL.createObjectURL(file) : currentUser?.avatar}
+                  alt="Avatar"
+                />
+                <img
+                  src="./Images/upload.jpg"
+                  alt="Another Image"
+                  className="hover-image"
+                />
+              </div>
               <input
                 type="file"
                 accept="image/*"
+                style={{ display: "none" }}
+                ref={fileInputRef}
                 onChange={handleImageChange}
               />
-              <button type="button" onClick={handleImageSubmit}>Upload Image</button>
             </div>
             <div className="input-with-icon">
+              <img src="./Images/enail-logo.png" className="email-logo" alt="Email Logo" />
               <input
                 type="email"
                 name="email"
@@ -122,14 +158,21 @@ const InterviewerProfile = ({ setProgress }) => {
               />
             </div>
             <div className="input-with-icon">
+              <img src="./Images/Username.png" className="username" alt="Username" />
               <input
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Username"
+                style={{marginLeft:"10px"}}
               />
             </div>
-            <button type="submit">Save</button>
+            <div className="button">
+              <div className="content">
+                
+                <button type="submit" style={{backgroundColor:"transparent", marginTop:"10px"}}><span className="button-text">Save</span></button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
