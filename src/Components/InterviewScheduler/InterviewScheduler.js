@@ -22,7 +22,10 @@ const InterviewScheduler = ({ open }) => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/candidate/get-all"
+        "http://localhost:8080/api/candidate/get-all", 
+        {
+          credentials: 'include' // Include credentials
+        }
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");

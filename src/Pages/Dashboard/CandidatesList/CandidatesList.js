@@ -33,9 +33,11 @@ const Candidates = ({ setProgress }) => {
       <input type="text" placeholder="Search candidates..." />
 
       <div className="tabs">
+        <div className="flex flex-row">
         <button className={`${Tab === 'all'?("Active"):("")}`} onClick={() => setTab('all')}>All</button>
         <button className={`${Tab === 'active'?("Active"):("")}`} onClick={() => setTab('active')}>Active</button>
         <button className={`${Tab === 'archived'?("Active"):("")}`} onClick={() => setTab('archived')}>Archived</button>
+        </div>
         
         <button  className= "create-candidate"onClick={() => setOpen(!open)}>Create Candidate</button>
         {open && (

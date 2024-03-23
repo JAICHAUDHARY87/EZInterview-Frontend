@@ -10,20 +10,21 @@ const ChatGptInterviwerSide = () => {
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [showCandidates, setShowCandidates] = useState(false); // State to control candidate list visibility
+  const [roles, setRoles] = useState([]);
   const state = useLocation().state;
-  const { skills ,role } = state;
-  
+  const { skills, role } = state;
+  const [currentTestId, setTestId] = useState('');
   
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     fetchData();
   }, []);
+
   function randomID(len) {
     let result = "";
     if (result) return result;
-    var chars =
-        "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
+    var chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
       maxPos = chars.length,
       i;
     len = len || 5;
@@ -32,12 +33,18 @@ const ChatGptInterviwerSide = () => {
     }
     return result;
   }
+
   const testId = randomID(10);
+
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/candidate/get-all', { withCredentials: true });
       const data = await response.data;
       setCandidates(data);
+
+      // Extracting unique roles from candidates
+      const uniqueRoles = [...new Set(data.map(candidate => candidate.role))];
+      setRoles(uniqueRoles);
     } catch (error) {
       console.error('Error fetching candidates:', error.message);
     }
@@ -48,9 +55,10 @@ const ChatGptInterviwerSide = () => {
       setLoading(true);
       const response = await axios.post('http://localhost:8080/api/test/auto-generate', {
         question: `Ask 10 questions related to ${skills.join(', ')} and ${role}`,
-        user : currentUser._id,
-        testId : testId
+        user: currentUser._id,
+        testId: testId
       });
+      setTestId(testId); 
       setQuestions(response.data.questions);
     } catch (error) {
       console.error('Error generating questions:', error.message);
@@ -58,19 +66,24 @@ const ChatGptInterviwerSide = () => {
       setLoading(false);
     }
   };
- 
 
   const handleSendEmail = () => {
-    // Send email logic here
-    // Get email addresses of selected candidates
     const selectedEmails = selectedCandidates.map(candidateId => {
       const selectedCandidate = candidates.find(candidate => candidate._id === candidateId);
       return selectedCandidate ? selectedCandidate.email : '';
     });
+    axios.post('http://localhost:8080/api/test/send-email', {
+      candidateIds: selectedCandidates,
+      companyId: currentUser._id,
+      testId: currentTestId
+    })
+      .then(response => {
+        console.log('Email sent successfully');
+      })
+      .catch(error => {
+        console.error('Error sending email:', error.message);
+      });
 
-    // Send email to selectedEmails
-    // send this link 
-    console.log('Sending emails to:', selectedEmails);
   };
 
   const handleCandidateSelection = (e) => {
@@ -82,6 +95,11 @@ const ChatGptInterviwerSide = () => {
     } else {
       setSelectedCandidates(prevSelected => prevSelected.filter(id => id !== candidateId));
     }
+  };
+
+  const handleRoleFilter = (selectedRole) => {
+    const filteredCandidates = candidates.filter(candidate => candidate.role === selectedRole);
+    setSelectedCandidates(filteredCandidates.map(candidate => candidate._id));
   };
 
   return (
@@ -116,6 +134,11 @@ const ChatGptInterviwerSide = () => {
       {showCandidates && (
         <div>
           <h2>Select Candidates for Test:</h2>
+          <div>
+            {roles.map((role, index) => (
+              <button key={index} onClick={() => handleRoleFilter(role)}>{role}</button>
+            ))}
+          </div>
           {candidates.map(candidate => (
             <div key={candidate._id}>
               <input 
