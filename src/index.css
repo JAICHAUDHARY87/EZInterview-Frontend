@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  background: white!important;
   -webkit-font-smoothing: antialiased;
   font-family: "Ubuntu", sans-serif;
   -moz-osx-font-smoothing: grayscale;
