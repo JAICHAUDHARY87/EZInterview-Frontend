@@ -29,7 +29,7 @@ function App() {
         <Route path='/profile' element={<Dashboard />} />
         <Route path="/candidates/:id" element={<CandidateProfile />} />
         <Route path="/candidates/:id/auto-generate" element={<ChatGptInterviwerSide />} />
-        <Route path="/candidates/:id/test" element={<ChatGptQuestion />} />
+        <Route path="/candidates/:id/test/:testId" element={<ChatGptQuestion />} />
         <Route path="/candidates/:id/manually-generate" element={<ManuallyQuestion />} />
       </Routes>
     </Router>
