@@ -158,7 +158,7 @@ const InterviewerProfile = ({ setProgress }) => {
               />
             </div>
             <div className="input-with-icon">
-              <img src="./Images/Username.png" className="username" alt="Username" />
+              <img src="./Images/username.png" className="username" alt="Username" />
               <input
                 name="username"
                 value={formData.username}

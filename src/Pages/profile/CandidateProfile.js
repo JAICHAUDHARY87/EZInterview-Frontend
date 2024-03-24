@@ -28,8 +28,9 @@ const CandidateProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false); // State to control dropdown visibility
 
   useEffect(() => {
+    console.log("changes");
     fetchData();
-  }, [id,candidate?.pdf_url]);
+  }, [candidate?.pdf_url,id ]);
 
   const fetchData = async () => {
     try {
@@ -39,18 +40,20 @@ const CandidateProfile = () => {
       }
       const data = await response.json();
       setCandidate(data);
-      console.log(data);
+      
     } catch (error) {
       console.error('Error fetching candidate data:', error.message);
     }
   };
 
+  
+
   const handleImageSubmit = async (e) => {
-    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+    if (files.length > 0 && files.length + formData.imageUrls.length < 2) {
       setUploading(true);
       setImageUploadError(false);
       const promises = [];
-
+  
       for (let i = 0; i < files.length; i++) {
         promises.push(storeImage(files[i]));
       }
@@ -62,10 +65,9 @@ const CandidateProfile = () => {
           });
           setImageUploadError(false);
           setUploading(false);
-          setDownloadURL(urls[0]); 
+          const downloadURL = urls[0]; 
           console.log(downloadURL);
-          await savePDFURL();
-          
+          await savePDFURL(downloadURL); // Pass the download URL to the savePDFURL function
         })
         .catch((err) => {
           setImageUploadError("Image upload failed (2 mb max per image)");
@@ -76,6 +78,7 @@ const CandidateProfile = () => {
       setUploading(false);
     }
   };
+  
 
   const storeImage = async (file) => {
     return new Promise((resolve, reject) => {
@@ -99,19 +102,38 @@ const CandidateProfile = () => {
           });
         }
       );
+      
     });
   };
 
-  const savePDFURL = async () => {
+  const savePDFURL = async (downloadURL1) => {
     try {
       const response = await axios.post('http://localhost:8080/api/candidate/save-pdf-url', {
-        pdf_url: downloadURL,
+        pdf_url: downloadURL1,
         candidateId: id
       });
       console.log(downloadURL)
       console.log('PDF URL saved successfully:', response.data);
+      await fetchData();
     } catch (error) {
       console.error('Error saving PDF URL:', error.message);
+    }
+  };
+
+  const deletePDFURL = async () => {
+    try {
+      // Send a request to your API to delete the PDF URL
+      const response = await axios.post('http://localhost:8080/api/candidate/save-pdf-url', {
+        pdf_url : null,
+        candidateId: id
+        
+      });
+      await fetchData();
+      console.log('PDF URL deleted successfully');
+      // Set downloadURL state to null
+      setDownloadURL(null);
+    } catch (error) {
+      console.error('Error deleting PDF URL:', error.message);
     }
   };
 
@@ -146,9 +168,18 @@ const CandidateProfile = () => {
           <p>Email: {candidate.email}</p>
           <p>Role: {candidate.role}</p>
           <p>Status: {candidate.current_status}</p>
-          {/* Add other candidate details as needed */}
-          {!candidate?.pdf_url ? (
-            <React.Fragment>
+          <p>Contact: {candidate.contact}</p>l
+          <p>Skills: {candidate.skills.join(', ')}</p>
+          {/* Conditional rendering based on the presence of PDF URL */}
+          {candidate.pdf_url ? (
+            <div>
+              <a href={candidate.pdf_url} className="download-link" download>
+                Download PDF
+              </a>
+              <button onClick={deletePDFURL}>Delete PDF URL</button>
+            </div>
+          ) : (
+            <div>
               <input
                 type="file"
                 accept="application/pdf"
@@ -157,13 +188,8 @@ const CandidateProfile = () => {
               <button type="button" disabled={uploading} onClick={handleImageSubmit}>
                 {uploading ? "Uploading..." : "Upload"}
               </button>
-            </React.Fragment>
-          ) : (
-            <a href={candidate?.pdf_url} className="download-link" download>
-              Download PDF
-            </a>
+            </div>
           )}
-
           {/* Dropdown button */}
           <div className="dropdown">
             <button onClick={toggleDropdown} className="dropbtn">
@@ -183,6 +209,7 @@ const CandidateProfile = () => {
       )}
     </div>
   );
+  
 };
 
 export default CandidateProfile;
