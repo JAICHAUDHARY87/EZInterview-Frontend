@@ -168,7 +168,7 @@ const CandidateProfile = () => {
           <p>Email: {candidate.email}</p>
           <p>Role: {candidate.role}</p>
           <p>Status: {candidate.current_status}</p>
-          <p>Contact: {candidate.contact}</p>l
+          <p>Contact: {candidate.contact}</p>
           <p>Skills: {candidate.skills.join(', ')}</p>
           {/* Conditional rendering based on the presence of PDF URL */}
           {candidate.pdf_url ? (
